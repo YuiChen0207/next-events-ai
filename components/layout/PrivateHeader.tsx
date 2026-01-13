@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { logoutClient } from "@/lib/supabase/auth";
+import toast from "react-hot-toast";
 import {
   Sheet,
   SheetContent,
@@ -26,6 +29,19 @@ import useUserStore from "@/store/user-store";
 export default function PrivateHeader() {
   const user = useUserStore((state) => state.user);
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logoutClient();
+      toast.success("Logged out");
+    } catch (err) {
+      console.error("Logout error:", err);
+      toast.error("Logout failed");
+    }
+    setIsOpen(false);
+    router.push("/login");
+  };
 
   const userMenuItems = [
     {
@@ -110,7 +126,7 @@ export default function PrivateHeader() {
               side="right"
               className="w-[300px] sm:w-[360px] h-full flex flex-col"
             >
-              <SheetHeader className="pt-6 pb-2">
+              <SheetHeader className="pt-6 pb-2 px-6">
                 <SheetTitle className="text-2xl">Menu</SheetTitle>
               </SheetHeader>
               <div className="px-4">
@@ -128,7 +144,7 @@ export default function PrivateHeader() {
                     >
                       <Button
                         variant="ghost"
-                        className="w-full justify-start items-center gap-4 py-5 px-3 text-base rounded-md hover:bg-slate-50"
+                        className="w-full justify-start items-center gap-4 py-5 px-3 text-base rounded-md hover:bg-slate-50 cursor-pointer"
                       >
                         <item.icon className="h-6 w-6 text-black" />
                         <span className="text-sm text-black">{item.label}</span>
@@ -142,7 +158,8 @@ export default function PrivateHeader() {
                 <div className="px-4 py-3">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 py-3"
+                    className="w-full justify-start gap-3 py-3 cursor-pointer"
+                    onClick={handleLogout}
                   >
                     <LogOut className="h-5 w-5 text-black" />
                     Logout
