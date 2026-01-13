@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { IUser } from "@/interfaces";
-import useUsersStore from "@/store/users-store";
+import useUserStore from "@/store/user-store";
 
 // SetUserClient 是 一個小 client component，專門用來：
 // 接收 server 傳來的 user
@@ -13,7 +13,7 @@ export default function SetUserClient({
 }: {
   user: IUser | Partial<IUser> | null;
 }) {
-  const setUser = useUsersStore((state) => state.setUser);
+  const setUser = useUserStore((state) => state.setUser);
 
   useEffect(() => {
     setUser(user);

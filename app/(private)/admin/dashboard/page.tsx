@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useUsersStore from "@/store/users-store";
+import useUserStore from "@/store/user-store";
 
 function AdminDashboardPage() {
   const router = useRouter();
-  const user = useUsersStore((state) => state.user);
+  const user = useUserStore((state) => state.user);
 
   useEffect(() => {
     if (!user) {

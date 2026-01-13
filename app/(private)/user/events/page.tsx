@@ -2,14 +2,14 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import useUsersStore from "@/store/users-store";
+import useUserStore from "@/store/user-store";
 
 // router.push / router.replace（useRouter）是 client-side 的導航
 // (push 會加入歷史紀錄，replace 不會）
 // redirect（next/navigation）是 server-side 的重導
 function UserEventsPage() {
   const router = useRouter();
-  const user = useUsersStore((state) => state.user);
+  const user = useUserStore((state) => state.user);
 
   useEffect(() => {
     if (!user) {

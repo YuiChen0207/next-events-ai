@@ -4,10 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, LayoutDashboard, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import useUsersStore from "@/store/users-store";
+import useUserStore from "@/store/user-store";
 
 export default function PrivateHeader() {
-  const user = useUsersStore((state) => state.user);
+  const user = useUserStore((state) => state.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [

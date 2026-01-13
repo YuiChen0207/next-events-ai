@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/actions/users";
 import PrivateHeader from "@/components/layout/PrivateHeader";
-import SetUserClient from "@/components/layout/SetUserClient";
+import SetUserClient from "@/hooks/SetUserClient";
 
 export default async function PrivateLayout({
   children,
