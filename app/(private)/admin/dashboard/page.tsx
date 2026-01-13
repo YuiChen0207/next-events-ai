@@ -1,19 +1,27 @@
-import React from "react";
-import { getCurrentUser } from "@/actions/users";
-import { redirect } from "next/navigation";
+"use client";
 
-async function AdminDashboardPage() {
-  const result = await getCurrentUser();
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useUsersStore from "@/store/users-store";
 
-  if (!result.success || !result.data) {
-    redirect("/login");
-  }
+function AdminDashboardPage() {
+  const router = useRouter();
+  const user = useUsersStore((state) => state.user);
 
-  const user = result.data;
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
 
-  // Check if user is admin
-  if (user.role !== "admin") {
-    redirect("/user/events");
+    // Check if user is admin
+    if (user.role !== "admin") {
+      router.push("/user/events");
+    }
+  }, [user, router]);
+
+  if (!user) {
+    return null;
   }
 
   return (
@@ -27,16 +35,16 @@ async function AdminDashboardPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Name:</span>
-              <span>{user.name}</span>
+              <span>{user?.name}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Email:</span>
-              <span>{user.email}</span>
+              <span>{user?.email}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Role:</span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                {user.role}
+                {user?.role}
               </span>
             </div>
             <div className="flex items-center gap-2">
@@ -44,7 +52,7 @@ async function AdminDashboardPage() {
                 User ID:
               </span>
               <span className="text-xs text-muted-foreground">
-                {user.user_id}
+                {user?.user_id}
               </span>
             </div>
           </div>

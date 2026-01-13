@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/actions/users";
 import PrivateHeader from "@/components/layout/PrivateHeader";
+import SetUserClient from "@/components/layout/SetUserClient";
 
 export default async function PrivateLayout({
   children,
@@ -19,7 +20,8 @@ export default async function PrivateLayout({
 
   return (
     <div className="min-h-screen bg-background">
-      <PrivateHeader user={user} />
+      <SetUserClient user={user} />
+      <PrivateHeader />
       <main>{children}</main>
     </div>
   );

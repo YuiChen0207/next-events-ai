@@ -4,20 +4,17 @@ import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, LayoutDashboard, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { IUser } from "@/interfaces";
+import useUsersStore from "@/store/users-store";
 
-interface PrivateHeaderProps {
-  user: IUser;
-}
-
-export default function PrivateHeader({ user }: PrivateHeaderProps) {
+export default function PrivateHeader() {
+  const user = useUsersStore((state) => state.user);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuItems = [
     {
-      label: user.role === "admin" ? "Dashboard" : "My Events",
-      href: user.role === "admin" ? "/admin/dashboard" : "/user/events",
-      icon: user.role === "admin" ? LayoutDashboard : Calendar,
+      label: user?.role === "admin" ? "Dashboard" : "My Events",
+      href: user?.role === "admin" ? "/admin/dashboard" : "/user/events",
+      icon: user?.role === "admin" ? LayoutDashboard : Calendar,
     },
   ];
 
@@ -34,7 +31,7 @@ export default function PrivateHeader({ user }: PrivateHeaderProps) {
         {/* Desktop: User Name + Hamburger Menu */}
         <div className="flex items-center gap-3">
           <span className="text-sm md:text-base font-semibold text-primary-foreground">
-            {user.name}
+            {user?.name ?? "User"}
           </span>
           <Button
             variant="ghost"

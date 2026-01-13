@@ -1,15 +1,25 @@
-import React from "react";
-import { getCurrentUser } from "@/actions/users";
-import { redirect } from "next/navigation";
+"use client";
 
-async function UserEventsPage() {
-  const result = await getCurrentUser();
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useUsersStore from "@/store/users-store";
 
-  if (!result.success || !result.data) {
-    redirect("/login");
+// router.push / router.replace（useRouter）是 client-side 的導航
+// (push 會加入歷史紀錄，replace 不會）
+// redirect（next/navigation）是 server-side 的重導
+function UserEventsPage() {
+  const router = useRouter();
+  const user = useUsersStore((state) => state.user);
+
+  useEffect(() => {
+    if (!user) {
+      router.push("/login");
+    }
+  }, [user, router]);
+
+  if (!user) {
+    return null;
   }
-
-  const user = result.data;
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -22,28 +32,28 @@ async function UserEventsPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Name:</span>
-              <span>{user.name}</span>
+              <span>{user?.name}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Email:</span>
-              <span>{user.email}</span>
+              <span>{user?.email}</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Role:</span>
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
-                {user.role}
+                {user?.role}
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="font-medium text-muted-foreground">Status:</span>
               <span
                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  user.is_active
+                  user?.is_active
                     ? "bg-green-100 text-green-800"
                     : "bg-red-100 text-red-800"
                 }`}
               >
-                {user.is_active ? "Active" : "Inactive"}
+                {user?.is_active ? "Active" : "Inactive"}
               </span>
             </div>
           </div>
