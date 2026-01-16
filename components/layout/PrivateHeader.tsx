@@ -98,7 +98,7 @@ export default function PrivateHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-primary/20 bg-primary shadow-md">
-      <div className="container flex h-16 items-center justify-between px-6">
+      <div className="container flex h-16 items-center justify-between px-10">
         {/* Logo / Site Name */}
         <Link href="/" className="flex items-center space-x-2">
           <span className="text-2xl font-bold text-primary-foreground">
@@ -108,8 +108,13 @@ export default function PrivateHeader() {
 
         {/* Desktop: User Name + Hamburger Menu */}
         <div className="flex items-center gap-3">
-          <span className="text-sm md:text-base font-semibold text-primary-foreground">
-            {user?.name ?? "User"}
+          <span className="text-md md:text-base font-semibold text-primary-foreground flex items-center gap-2">
+            <span>{user?.name ?? "User"}</span>
+            {user?.role && (
+              <span className="text-md font-medium text-primary-foreground/70">
+                ({user.role})
+              </span>
+            )}
           </span>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild>
