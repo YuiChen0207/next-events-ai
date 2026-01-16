@@ -6,7 +6,7 @@ import * as z from "zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -181,9 +181,6 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
-
-        {/* Toast Container */}
-        <Toaster position="top-center" reverseOrder={false} />
       </div>
     </div>
   );

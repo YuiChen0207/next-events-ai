@@ -24,7 +24,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${montserratFont.className} antialiased`}>
         {children}
-        <Toaster />
+        <Toaster
+          toastOptions={{
+            // sensible defaults so toasts always auto-dismiss
+            success: { duration: 2500 },
+            error: { duration: 4000 },
+          }}
+        />
       </body>
     </html>
   );
