@@ -151,8 +151,8 @@ export default function PrivateHeader() {
                         variant="ghost"
                         className="w-full justify-start items-center gap-4 py-5 px-3 text-base rounded-md hover:bg-slate-50 cursor-pointer"
                       >
-                        <item.icon className="h-6 w-6 text-black" />
-                        <span className="text-sm text-black">{item.label}</span>
+                        <item.icon className="h-6 w-6 text-black " />
+                        <span className="text-md text-black">{item.label}</span>
                       </Button>
                     </Link>
                   ))}
@@ -166,7 +166,7 @@ export default function PrivateHeader() {
                     className="w-full justify-start gap-3 py-3 cursor-pointer"
                     onClick={handleLogout}
                   >
-                    <LogOut className="h-5 w-5 text-black" />
+                    <LogOut className="h-5 w-5 text-black text-md" />
                     Logout
                   </Button>
                 </div>
