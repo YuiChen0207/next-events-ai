@@ -27,7 +27,7 @@ export interface IEvent {
   location?: string;
   capacity: number;
   images?: string[];
-  status: "draft" | "published" | "cancelled" | "completed";
+  status: string;
   guests?: string;
 }
 
@@ -52,7 +52,7 @@ export interface ICreateEventPayload {
   location?: string;
   capacity: number;
   images?: string[];
-  status?: "draft" | "published" | "cancelled" | "completed";
+  status?: string;
   guests?: string;
 }
 

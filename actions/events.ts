@@ -3,9 +3,11 @@
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
 import { IEvent, ICreateEventPayload } from "@/interfaces";
+import { uploadFilesAndGetUrls } from "./file-uploads";
 
 export const createEvent = async (
   payload: ICreateEventPayload,
+  files?: File[],
 ): Promise<{
   success: boolean;
   data?: IEvent;
@@ -15,9 +17,28 @@ export const createEvent = async (
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    let imageUrls: string[] = [];
+
+    // Upload files if provided
+    if (files && files.length > 0) {
+      const uploadResult = await uploadFilesAndGetUrls(files);
+
+      if (!uploadResult.success) {
+        throw new Error(uploadResult.message || "Failed to upload files");
+      }
+
+      imageUrls = uploadResult.urls || [];
+    }
+
+    // Add image URLs to payload
+    const eventData = {
+      ...payload,
+      images: imageUrls,
+    };
+
     const { data, error } = await supabase
       .from("events")
-      .insert(payload)
+      .insert(eventData)
       .select()
       .single();
 
@@ -38,7 +59,10 @@ export const createEvent = async (
     console.error("Unexpected error in createEvent:", error);
     return {
       success: false,
-      message: "An unexpected error occurred.",
+      message:
+        error instanceof Error
+          ? error.message
+          : "An unexpected error occurred.",
     };
   }
 };

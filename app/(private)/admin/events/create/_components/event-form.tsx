@@ -3,7 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -16,6 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
+import { createEvent } from "@/actions/events";
+import toast from "react-hot-toast";
 
 const formSchema = z.object({
   title: z.string().min(1, {
@@ -52,9 +55,11 @@ interface EventFormProps {
 }
 
 function EventForm({ formType }: EventFormProps) {
+  const router = useRouter();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const previewUrlsRef = useRef<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -74,22 +79,35 @@ function EventForm({ formType }: EventFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     try {
-      // TODO: Implement actual async event creation/update API call here
-      // Example: await createEvent(values, selectedImages);
+      // Prepare payload matching ICreateEventPayload interface
+      const payload = {
+        title: values.title,
+        small_description: values.shortDescription,
+        full_description: values.fullDescription,
+        date: values.date,
+        start_time: values.startTime,
+        end_time: values.endTime,
+        location: values.location,
+        capacity: parseInt(values.capacity),
+        status: values.status,
+      };
 
-      // Temporary simulation of async operation
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Call createEvent with payload and files
+      const result = await createEvent(payload, selectedImages);
 
-      console.log("Form Values:", values);
-      console.log("Selected Images:", selectedImages);
+      if (!result.success) {
+        throw new Error(result.message || "Failed to create event");
+      }
 
-      // TODO: Add success toast notification and redirect after successful submission
-      // toast.success(formType === "create" ? "Event created!" : "Event updated!");
-      // router.push("/admin/events");
+      toast.success("Event created successfully!");
+      router.push("/admin/events");
     } catch (error) {
       console.error("Form submission error:", error);
-      // TODO: Add error toast notification
-      // toast.error("Failed to submit form. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to submit form. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -101,12 +119,13 @@ function EventForm({ formType }: EventFormProps) {
       // Revoke existing blob URLs to prevent memory leaks
       imagePreviews.forEach((url) => URL.revokeObjectURL(url));
 
-      const filesArray = Array.from(files);
+      const filesArray = Array.from(files); // 轉成array所以可以操作
       setSelectedImages(filesArray);
 
       // Create preview URLs
       const previews = filesArray.map((file) => URL.createObjectURL(file));
       setImagePreviews(previews);
+      previewUrlsRef.current = previews;
     }
   };
 
@@ -118,14 +137,15 @@ function EventForm({ formType }: EventFormProps) {
     const newPreviews = imagePreviews.filter((_, i) => i !== index);
     setSelectedImages(newImages);
     setImagePreviews(newPreviews);
+    previewUrlsRef.current = newPreviews;
   };
 
   // Cleanup effect to revoke all blob URLs on component unmount
   useEffect(() => {
     return () => {
-      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     };
-  }, [imagePreviews]);
+  }, []);
 
   return (
     <div className="bg-card border rounded-lg shadow-lg p-8">
