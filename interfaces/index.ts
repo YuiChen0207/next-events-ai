@@ -26,6 +26,7 @@ export interface IEvent {
   end_time: string; // Time string (HH:mm:ss)
   location?: string;
   capacity: number;
+  images?: string[];
   status: "draft" | "published" | "cancelled" | "completed";
   guests?: string;
 }
@@ -39,4 +40,25 @@ export interface IEventTicketType {
   total_tickets: number;
   available_tickets: number;
   booked_tickets: number;
+}
+
+export interface ICreateEventPayload {
+  title: string;
+  small_description?: string;
+  full_description?: string;
+  date: string; // Date string (YYYY-MM-DD)
+  start_time: string; // Time string (HH:mm:ss)
+  end_time: string; // Time string (HH:mm:ss)
+  location?: string;
+  capacity: number;
+  images?: string[];
+  status?: "draft" | "published" | "cancelled" | "completed";
+  guests?: string;
+}
+
+export interface ICreateTicketTypePayload {
+  event_id: string; // UUID
+  name: string;
+  price: number;
+  total_tickets: number;
 }
