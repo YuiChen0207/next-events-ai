@@ -28,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${dmSans.variable} ${cormorantGaramond.variable} ${dmSans.className} antialiased`}>
+      <body
+        className={`${dmSans.variable} ${cormorantGaramond.variable} ${dmSans.className} antialiased`}
+      >
         {children}
         <Toaster
           toastOptions={{
