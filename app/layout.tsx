@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Montserrat } from "next/font/google";
+import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 
@@ -9,9 +9,15 @@ export const metadata: Metadata = {
     "An event management booking platform built with Next.js and AI tools.",
 };
 
-const montserratFont = Montserrat({
+const cormorantGaramond = Cormorant_Garamond({
   subsets: ["latin"],
-  variable: "--font-montserrat",
+  variable: "--font-serif",
+  weight: ["300", "400", "500", "600", "700"],
+});
+
+const dmSans = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-sans",
   weight: ["400", "500", "600", "700"],
 });
 
@@ -22,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${montserratFont.className} antialiased`}>
+      <body className={`${dmSans.variable} ${cormorantGaramond.variable} ${dmSans.className} antialiased`}>
         {children}
         <Toaster
           toastOptions={{
