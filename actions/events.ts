@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { IEvent, ICreateEventPayload } from "@/interfaces";
 import { uploadFilesAndGetUrls } from "./file-uploads";
 
@@ -118,6 +119,22 @@ export const deleteEventById = async (
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // First, delete all ticket types associated with this event
+    // 手動處理關聯資料的刪除順序，避免 foreign key constraint 問題
+    const { error: ticketTypesError } = await supabase
+      .from("events_ticket_types")
+      .delete()
+      .eq("event_id", id);
+
+    if (ticketTypesError) {
+      console.error("Error deleting ticket types:", ticketTypesError);
+      return {
+        success: false,
+        message: ticketTypesError.message || "Failed to delete ticket types.",
+      };
+    }
+
+    // Then delete the event
     const { error } = await supabase.from("events").delete().eq("id", id);
 
     if (error) {
@@ -127,6 +144,8 @@ export const deleteEventById = async (
         message: error.message || "Failed to delete event.",
       };
     }
+
+    revalidatePath("/admin/events");
 
     return {
       success: true,

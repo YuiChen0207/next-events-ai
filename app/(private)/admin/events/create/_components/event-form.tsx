@@ -17,7 +17,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import { createEvent } from "@/actions/events";
+import { createEvent, updateEventById } from "@/actions/events";
+import { uploadFilesAndGetUrls } from "@/actions/file-uploads";
 import toast from "react-hot-toast";
 
 const formSchema = z.object({
@@ -52,18 +53,38 @@ const formSchema = z.object({
 
 interface EventFormProps {
   formType: "create" | "edit";
+  eventId?: string;
+  initialData?: {
+    title: string;
+    shortDescription: string;
+    fullDescription: string;
+    location: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    capacity: string;
+    status: string;
+  };
+  initialImages?: string[];
 }
 
-function EventForm({ formType }: EventFormProps) {
+function EventForm({
+  formType,
+  eventId,
+  initialData,
+  initialImages,
+}: EventFormProps) {
   const router = useRouter();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>(
+    initialImages || [],
+  );
   const [isLoading, setIsLoading] = useState(false);
-  const previewUrlsRef = useRef<string[]>([]);
+  const previewUrlsRef = useRef<string[]>(initialImages || []);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: initialData || {
       title: "",
       shortDescription: "",
       fullDescription: "",
@@ -92,14 +113,45 @@ function EventForm({ formType }: EventFormProps) {
         status: values.status,
       };
 
-      // Call createEvent with payload and files
-      const result = await createEvent(payload, selectedImages);
+      let result;
+      const isEditMode = formType === "edit" && eventId;
 
-      if (!result.success) {
-        throw new Error(result.message || "Failed to create event");
+      if (isEditMode) {
+        // Prepare images for update
+        let imageUrls: string[] = [];
+
+        if (selectedImages.length > 0) {
+          // Upload new images
+          const uploadResult = await uploadFilesAndGetUrls(selectedImages);
+          if (!uploadResult.success || !uploadResult.urls) {
+            throw new Error(uploadResult.message || "Failed to upload images");
+          }
+          imageUrls = uploadResult.urls;
+        } else {
+          // Keep existing images (filter out blob URLs)
+          imageUrls = imagePreviews.filter((url) => !url.startsWith("blob:"));
+        }
+
+        result = await updateEventById(eventId, {
+          ...payload,
+          images: imageUrls,
+        });
+      } else {
+        // Create new event
+        result = await createEvent(payload, selectedImages);
       }
 
-      toast.success("Event created successfully!");
+      if (!result.success) {
+        throw new Error(
+          result.message ||
+            `Failed to ${formType === "edit" ? "update" : "create"} event`,
+        );
+      }
+
+      toast.success(
+        result.message ||
+          `Event ${formType === "edit" ? "updated" : "created"} successfully!`,
+      );
       router.push("/admin/events");
     } catch (error) {
       console.error("Form submission error:", error);
@@ -140,17 +192,22 @@ function EventForm({ formType }: EventFormProps) {
     previewUrlsRef.current = newPreviews;
   };
 
-  // Cleanup effect to revoke all blob URLs on component unmount
+  // Cleanup effect to revoke only blob URLs on component unmount
   useEffect(() => {
     return () => {
-      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+      previewUrlsRef.current.forEach((url) => {
+        // Only revoke blob URLs, skip server URLs from initialImages
+        if (url.startsWith("blob:")) {
+          URL.revokeObjectURL(url);
+        }
+      });
     };
   }, []);
 
   return (
-    <div className="bg-card border rounded-lg shadow-lg p-8">
+    <div className="bg-card border border-border/60 rounded-sm shadow-sm p-12 max-w-4xl mx-auto">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
             name="title"
@@ -223,7 +280,7 @@ function EventForm({ formType }: EventFormProps) {
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <FormField
               control={form.control}
               name="date"
@@ -277,7 +334,7 @@ function EventForm({ formType }: EventFormProps) {
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <FormField
               control={form.control}
               name="capacity"
@@ -311,9 +368,9 @@ function EventForm({ formType }: EventFormProps) {
             />
           </div>
 
-          <div className="space-y-4">
-            <FormLabel>Event Images</FormLabel>
-            <div className="flex flex-col gap-4">
+          <div className="space-y-5 pt-4 border-t border-border/40">
+            <FormLabel className="text-base">Event Images</FormLabel>
+            <div className="flex flex-col gap-5">
               <Input
                 type="file"
                 accept="image/*"
@@ -322,23 +379,24 @@ function EventForm({ formType }: EventFormProps) {
                 className="cursor-pointer"
               />
               {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   {imagePreviews.map((preview, index) => (
                     <div
                       key={preview}
-                      className="relative aspect-square overflow-hidden rounded-lg border bg-muted group"
+                      className="relative aspect-square overflow-hidden rounded-sm border border-border/60 bg-muted/20 group"
                     >
                       <Image
                         src={preview}
                         alt={`Preview ${index + 1}`}
                         fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
                         className="object-contain"
                       />
-                      <div className="absolute inset-0 bg-black/0" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
                       <button
                         type="button"
                         onClick={() => removeImage(index)}
-                        className="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1 cursor-pointer"
+                        className="absolute top-2 right-2 bg-destructive/90 hover:bg-destructive text-white rounded-full p-1.5 cursor-pointer opacity-0 group-hover:opacity-100 transition-all shadow-md"
                         aria-label="Remove image"
                       >
                         <svg
@@ -361,20 +419,22 @@ function EventForm({ formType }: EventFormProps) {
             </div>
           </div>
 
-          <Button
-            type="submit"
-            className="w-full cursor-pointer"
-            size="lg"
-            disabled={isLoading}
-          >
-            {isLoading
-              ? formType === "create"
-                ? "Creating..."
-                : "Updating..."
-              : formType === "create"
-                ? "Create Event"
-                : "Update Event"}
-          </Button>
+          <div className="pt-6 border-t border-border/40">
+            <Button
+              type="submit"
+              className="w-full cursor-pointer"
+              size="lg"
+              disabled={isLoading}
+            >
+              {isLoading
+                ? formType === "create"
+                  ? "Creating..."
+                  : "Updating..."
+                : formType === "create"
+                  ? "Create Event"
+                  : "Update Event"}
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

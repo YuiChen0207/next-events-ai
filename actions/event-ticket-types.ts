@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 import { IEventTicketType, ICreateTicketTypePayload } from "@/interfaces";
 
 export const createTicketType = async (
@@ -48,6 +49,9 @@ export const createTicketType = async (
       };
     }
 
+    // Server Component 的資料預設會被快取，revalidatePath可以「失效 Server Cache」
+    revalidatePath(`/admin/events/tickets/${payload.event_id}`);
+
     return {
       success: true,
       data: data as IEventTicketType,
@@ -89,6 +93,10 @@ export const updateTicketTypeById = async (
       };
     }
 
+    if (data?.event_id) {
+      revalidatePath(`/admin/events/tickets/${data.event_id}`);
+    }
+
     return {
       success: true,
       data: data as IEventTicketType,
@@ -113,6 +121,13 @@ export const deleteTicketTypeById = async (
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
+    // Get event_id before deleting
+    const { data: ticketType } = await supabase
+      .from("events_ticket_types")
+      .select("event_id")
+      .eq("id", id)
+      .single();
+
     const { error } = await supabase
       .from("events_ticket_types")
       .delete()
@@ -124,6 +139,10 @@ export const deleteTicketTypeById = async (
         success: false,
         message: error.message || "Failed to delete ticket type.",
       };
+    }
+
+    if (ticketType?.event_id) {
+      revalidatePath(`/admin/events/tickets/${ticketType.event_id}`);
     }
 
     return {
