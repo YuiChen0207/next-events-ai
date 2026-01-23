@@ -1,3 +1,10 @@
+/**
+ * Renders the admin "Manage Users" page UI.
+ *
+ * Renders a container with a heading and a placeholder card indicating where the user management interface will appear.
+ *
+ * @returns The React element for the Admin Users page.
+ */
 export default function AdminUsersPage() {
   return (
     <div className="container mx-auto p-8">

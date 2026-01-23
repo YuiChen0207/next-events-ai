@@ -1,3 +1,8 @@
+/**
+ * Render the Admin Profile page.
+ *
+ * @returns The JSX element that contains the admin profile layout, including the page heading and a content card where profile settings appear.
+ */
 export default function AdminProfilePage() {
   return (
     <div className="container mx-auto p-8">

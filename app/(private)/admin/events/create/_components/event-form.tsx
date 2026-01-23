@@ -54,6 +54,15 @@ interface EventFormProps {
   formType: "create" | "edit";
 }
 
+/**
+ * Render an event creation/edit form with validation, image upload previews, and submission handling.
+ *
+ * The form uses zod validation and react-hook-form, supports multiple image selection with object-URL previews
+ * (revoking URLs on removal and component unmount), and submits a payload to createEvent.
+ *
+ * @param formType - "create" to render creation UI or "edit" to render editing UI; affects the submit button label.
+ * @returns A React element containing the event form UI.
+ */
 function EventForm({ formType }: EventFormProps) {
   const router = useRouter();
   const [selectedImages, setSelectedImages] = useState<File[]>([]);

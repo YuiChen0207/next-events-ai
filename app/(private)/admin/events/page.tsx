@@ -2,6 +2,11 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
 
+/**
+ * Render the admin events management page with a title and a "Create Event" action.
+ *
+ * @returns The JSX element for the admin events management page, containing a PageTitle, a Button wrapped by a client-side Link to `/admin/events/create`, and a placeholder card for event content.
+ */
 export default function AdminEventsPage() {
   return (
     <div className="container mx-auto p-8">
