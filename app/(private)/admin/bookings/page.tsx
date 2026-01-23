@@ -1,3 +1,11 @@
+/**
+ * Renders the admin bookings management page layout.
+ *
+ * Displays a centered container with a page heading and a placeholder card
+ * where the booking management interface can be implemented.
+ *
+ * @returns The component's JSX containing a container div, a "Manage Bookings" heading, and a placeholder card element.
+ */
 export default function AdminBookingsPage() {
   return (
     <div className="container mx-auto p-8">

@@ -1,3 +1,8 @@
+/**
+ * Renders the Help & Support page layout.
+ *
+ * @returns The page's JSX containing a container with a header and a card placeholder for help articles and support resources.
+ */
 export default function UserHelpPage() {
   return (
     <div className="container mx-auto p-8">

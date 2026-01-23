@@ -21,6 +21,14 @@ const dmSans = DM_Sans({
   weight: ["400", "500", "600", "700"],
 });
 
+/**
+ * Root layout component that applies global font variables and renders top-level page content.
+ *
+ * Renders the HTML root and body with the configured font CSS variables and includes a Toaster
+ * preconfigured with default durations for success and error toasts, while rendering the provided children.
+ *
+ * @returns The root HTML element containing the body with applied font variables, rendered children, and a configured Toaster.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

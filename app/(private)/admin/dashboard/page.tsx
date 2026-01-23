@@ -4,6 +4,13 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/user-store";
 
+/**
+ * Renders the admin dashboard and enforces page-level access control.
+ *
+ * If no authenticated user exists, the component redirects to `/login`. If an authenticated user exists but their role is not `"admin"`, the component redirects to `/user/events`.
+ *
+ * @returns The admin dashboard React element, or `null` when there is no authenticated user.
+ */
 function AdminDashboardPage() {
   const router = useRouter();
   const user = useUserStore((state) => state.user);

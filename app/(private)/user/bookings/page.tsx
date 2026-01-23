@@ -1,3 +1,10 @@
+/**
+ * Render the My Bookings page.
+ *
+ * Displays a heading and a card containing placeholder text indicating where event bookings will appear.
+ *
+ * @returns The JSX element for the My Bookings page (heading and placeholder card).
+ */
 export default function UserBookingsPage() {
   return (
     
