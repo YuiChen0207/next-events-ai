@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
-import { BackButton } from "@/components/ui/back-button";
 import {
   Table,
   TableBody,
@@ -19,7 +18,6 @@ export default async function AdminEventsPage() {
 
   return (
     <div className="container mx-auto px-8 py-12 max-w-7xl">
-      <BackButton href="/admin/dashboard" label="Back to Dashboard" />
       <div className="flex justify-between items-start">
         <PageTitle>Manage Events</PageTitle>
         <Link href="/admin/events/create">
@@ -28,7 +26,7 @@ export default async function AdminEventsPage() {
       </div>
       <div className="bg-card rounded-sm border border-border/60 shadow-sm overflow-hidden">
         <Table>
-          <TableHeader className="bg-muted/100">
+          <TableHeader className="bg-[#0e7490]/20">
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Date</TableHead>
@@ -50,9 +48,9 @@ export default async function AdminEventsPage() {
               </TableRow>
             ) : (
               events.map((event) => (
-                <TableRow key={event.id}>
+                <TableRow key={event.id} className="border-b border-border/60">
                   <TableCell className="font-medium">{event.title}</TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-muted-foreground whitespace-nowrap">
                     {event.date}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
