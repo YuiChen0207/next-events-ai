@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "stripe:listen": ".\\stripe.exe listen -f http://localhost:3000/api/stripe/webhook -e checkout.session.completed,checkout.session.expired,payment_intent.payment_failed",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint ./app ./actions ./components ./lib ./interfaces --ext .ts,.tsx,.js,.jsx"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -14,16 +15,19 @@
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.4",
+    "@stripe/stripe-js": "^8.6.4",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.89.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hook-form": "^7.69.0",
     "react-hot-toast": "^2.6.0",
+    "stripe": "^20.2.0",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^4.3.4",

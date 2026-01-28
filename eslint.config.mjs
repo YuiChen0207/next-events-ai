@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore agent skills and generated artifacts
+    ".agent/**",
+    "node_modules/**",
   ]),
 ]);
 

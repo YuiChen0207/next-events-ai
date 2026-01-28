@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
@@ -17,15 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { loginUser } from "@/actions/users";
-import { USER_ROLES } from "@/constants";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -34,13 +25,9 @@ const formSchema = z.object({
   password: z.string().min(8, {
     message: "Password must be at least 8 characters.",
   }),
-  role: z.string().min(1, {
-    message: "Please select a role.",
-  }),
 });
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -48,7 +35,6 @@ export default function LoginPage() {
     defaultValues: {
       email: "",
       password: "",
-      role: "",
     },
   });
 
@@ -61,20 +47,22 @@ export default function LoginPage() {
         password: values.password,
       });
 
-      console.log(result);
-
       if (result.success) {
-        toast.success(result.message);
-        // Navigate based on selected role
+        // Navigate based on user's actual role from database
+        const userRole = (result.data as { role?: string })?.role;
+
         const targetPath =
-          values.role === "admin" ? "/admin/dashboard" : "/user/events";
-        setTimeout(() => {
-          router.push(targetPath);
-        }, 1000);
+          userRole === "admin" ? "/admin/dashboard" : "/user/events";
+
+        toast.success(result.message);
+
+        // Direct navigation without delay to avoid race conditions
+        window.location.href = targetPath;
       } else {
         toast.error(result.message);
       }
     } catch (error) {
+      console.error("Login error:", error);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -127,31 +115,6 @@ export default function LoginPage() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role</FormLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select your role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {USER_ROLES.map((role) => (
-                          <SelectItem key={role.value} value={role.value}>
-                            {role.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

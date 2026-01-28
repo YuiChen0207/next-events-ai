@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import useUserStore from "@/store/user-store";
+import { PageTitle } from "@/components/ui/page-title";
 
 function AdminDashboardPage() {
   const router = useRouter();
@@ -25,10 +26,9 @@ function AdminDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <div className="min-h-screen bg-background py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-
+        <PageTitle>Admin Dashboard</PageTitle>
         {/* Admin Profile Card */}
         <div className="bg-card border rounded-lg shadow p-6 mb-8">
           <h2 className="text-xl font-semibold mb-4">Administrator Profile</h2>
