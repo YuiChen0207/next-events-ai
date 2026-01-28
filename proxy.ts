@@ -94,6 +94,8 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public folder
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Exclude API webhook paths (Stripe) from the auth proxy so external
+    // services can POST without being redirected to /login.
+    "/((?!_next/static|_next/image|favicon.ico|api/stripe|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
